@@ -36,8 +36,8 @@ namespace t3new {
 
     class Game {
     private:
-        const int SCREEN_WIDTH = 640;
-        const int SCREEN_HEIGHT = 480;
+        const int SCREEN_WIDTH = 512;
+        const int SCREEN_HEIGHT = 512;
 
         bool quit = false;
 
@@ -58,38 +58,28 @@ namespace t3new {
                         break;
                     }
 
-                    render();
+                    clear_screen();
+                    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
+                    draw_grid();
+                    //Update screen
+                    SDL_RenderPresent(renderer);
                 }
             }
         }
 
-        void render() {
-            //Clear screen
+        void clear_screen() {
             SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
             SDL_RenderClear(renderer);
+        }
 
-            //Render red filled quad
-            SDL_Rect fillRect = {SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
-            SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
-            SDL_RenderFillRect(renderer, &fillRect);
+        void draw_grid() {
+            for (int i = 0; i < 2; ++i) {
+                int x = (SCREEN_WIDTH * (1 + i)) / 3;
+                int y = (SCREEN_HEIGHT * (1 + i)) / 3;
 
-            //Render green outlined quad
-            SDL_Rect outlineRect = {SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3};
-            SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0xFF);
-            SDL_RenderDrawRect(renderer, &outlineRect);
-
-            //Draw blue horizontal line
-            SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
-            SDL_RenderDrawLine(renderer, 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
-
-            //Draw vertical line of yellow dots
-            SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0x00, 0xFF);
-            for (int i = 0; i < SCREEN_HEIGHT; i += 4) {
-                SDL_RenderDrawPoint(renderer, SCREEN_WIDTH / 2, i);
+                SDL_RenderDrawLine(renderer, x, 0, x, SCREEN_HEIGHT);
+                SDL_RenderDrawLine(renderer, 0, y, SCREEN_HEIGHT, y);
             }
-
-            //Update screen
-            SDL_RenderPresent(renderer);
         }
 
     public:
