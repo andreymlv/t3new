@@ -30,14 +30,18 @@ namespace t3new {
         std::throw_with_nested(std::runtime_error(msg.str()));
     }
 
+    class Window {
+
+    };
+
     class Mouse {
 
     };
 
     class Game {
     private:
-        const int SCREEN_WIDTH = 512;
-        const int SCREEN_HEIGHT = 512;
+        int screenWidth = 512;
+        int screenHeight = 512;
 
         bool quit = false;
 
@@ -58,6 +62,8 @@ namespace t3new {
                         break;
                     }
 
+                    SDL_GetWindowSize(window, &screenWidth, &screenHeight);
+
                     clear_screen();
                     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
                     draw_grid();
@@ -74,11 +80,11 @@ namespace t3new {
 
         void draw_grid() {
             for (int i = 0; i < 2; ++i) {
-                int x = (SCREEN_WIDTH * (1 + i)) / 3;
-                int y = (SCREEN_HEIGHT * (1 + i)) / 3;
+                int x = (screenWidth * (1 + i)) / 3;
+                int y = (screenHeight * (1 + i)) / 3;
 
-                SDL_RenderDrawLine(renderer, x, 0, x, SCREEN_HEIGHT);
-                SDL_RenderDrawLine(renderer, 0, y, SCREEN_HEIGHT, y);
+                SDL_RenderDrawLine(renderer, x, 0, x, screenHeight);
+                SDL_RenderDrawLine(renderer, 0, y, screenWidth, y);
             }
         }
 
@@ -107,7 +113,7 @@ namespace t3new {
 
             //Create window
             window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                      SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+                                      screenWidth, screenHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
             if (!window) {
                 throw_exception("Window could not be created!");
             }
