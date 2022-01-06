@@ -1,5 +1,5 @@
 #include <iostream>
-#include <sstream>
+#include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL_image.h>
@@ -25,9 +25,8 @@ namespace t3new {
      * @param s Commentary.
      */
     void throw_exception(const std::string &s, const char *SDL_ErrorFunction(void) = SDL_GetError) {
-        std::stringstream msg;
-        msg << s << "SDL Error: " << SDL_ErrorFunction();
-        std::throw_with_nested(std::runtime_error(msg.str()));
+        auto msg = std::string("SDL Error: " + std::string(SDL_ErrorFunction()));
+        std::throw_with_nested(std::runtime_error(msg));
     }
 
     class Window {
@@ -36,6 +35,24 @@ namespace t3new {
 
     class Mouse {
 
+    };
+
+    class Board {
+    private:
+        Cell cells;
+    public:
+    };
+
+    class Cell : public Player {
+    private:
+        char player;
+    public:
+        explicit Cell(char player) : player(player) {}
+        virtual ~Cell() = default;
+    };
+
+    enum class Player : char {
+        X = 'X', O = 'O'
     };
 
     class Game {
@@ -62,12 +79,8 @@ namespace t3new {
                         break;
                     }
 
-                    SDL_GetWindowSize(window, &screenWidth, &screenHeight);
-
                     clear_screen();
-                    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
                     draw_grid();
-                    //Update screen
                     SDL_RenderPresent(renderer);
                 }
             }
@@ -79,6 +92,7 @@ namespace t3new {
         }
 
         void draw_grid() {
+            SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
             for (int i = 0; i < 2; ++i) {
                 int x = (screenWidth * (1 + i)) / 3;
                 int y = (screenHeight * (1 + i)) / 3;
@@ -106,14 +120,9 @@ namespace t3new {
                 throw_exception("SDL could not initialize!");
             }
 
-            //Set texture filtering to linear
-            if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) {
-                std::cerr << "Warning: Linear texture filtering not enabled!" << std::endl;
-            }
-
             //Create window
             window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                      screenWidth, screenHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+                                      screenWidth, screenHeight, SDL_WINDOW_SHOWN);
             if (!window) {
                 throw_exception("Window could not be created!");
             }
